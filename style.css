@@ -1,0 +1,220 @@
+/* استایل کلی */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #1a1a2e;
+  color: inherit;
+  margin: 0;
+  padding: 20px;
+  direction: inherit;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: inherit;
+  color: inherit;
+}
+
+.language-select {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.section {
+  font-size: inherit;
+  background: inherit;
+  border-radius: inherit;
+  padding: inherit;
+  margin-bottom: inherit;
+  box-shadow: inherit;
+}
+
+.section-title {
+  font-size: inherit;
+  margin-bottom: inherit;
+  color: inherit;
+}
+
+.wallet-section {
+  display: inherit;
+  text-align: inherit;
+}
+
+.wallet-select {
+  padding: inherit;
+  margin-right: inherit;
+  border-radius: inherit;
+  background: inherit;
+  color: inherit;
+  border: inherit;
+}
+
+.button {
+  padding: inherit;
+  background: inherit;
+  color: inherit;
+  border: inherit;
+  border-radius: inherit;
+  cursor: inherit;
+  transition: inherit;
+}
+
+.button:hover {
+  background-color: inherit;
+}
+
+.account {
+  margin-top: inherit;
+  font-size: inherit;
+}
+
+.input-group {
+  display: inherit;
+  flex-direction: inherit;
+  gap: inherit;
+}
+
+.input {
+  padding: inherit;
+  border: none;
+  border-radius: inherit;
+  background: inherit;
+  color: inherit;
+}
+
+.radio-group {
+  display: inherit;
+  gap: inherit;
+}
+
+.message {
+  text-align: inherit;
+  color: inherit;
+  margin: inherit;
+}
+
+.info-grid {
+  display: inherit;
+  grid-template-columns: inherit;
+  gap: inherit;
+}
+
+/* استایل ساختار درختی با افکت ستاره‌های در حال سقوط */
+.binary-tree {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  overflow-x: auto;
+  padding: 20px;
+  background: linear-gradient(180deg, #1a1a2e, #0f0f3a);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tree-node {
+  position: relative;
+  margin: 10px;
+  text-align: center;
+  background: #16213e;
+  border: 10px solid #ffcc00;
+  border-radius: 10px;
+  padding: 15px;
+  width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  animation: fall 0.5s ease-in-out forwards;
+}
+
+.tree-node::before {
+  content: "\f005"; /* آیکون ستاره از Font Awesome */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: #ffcc00;
+  font-size: 1.5rem;
+  display: block;
+  margin-bottom: 5px;
+  animation: twinkle 2s infinite;
+}
+
+.node-address,
+.node-id,
+.node-upline {
+  font-size: 0.9rem;
+  color: #e0e0e0;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.tree-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+  position: relative;
+}
+
+.tree-branch::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 2px;
+  height: 20px;
+  background: #ffcc00;
+}
+
+.branch-label {
+  font-size: inherit;
+  color: inherit;
+  margin-bottom: inherit;
+  display: block;
+}
+
+/* استایل برای خطوط اتصال بین گره‌ها */
+.tree-branch .branch {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.tree-branch .branch::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 2px;
+  height: 20px;
+  background: #ffcc00;
+}
+
+.tree-branch .left,
+.tree-branch .right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 50%;
+}
+
+/* انیمیشن سقوط */
+@keyframes fall {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* انیمیشن درخشش ستاره */
+}
