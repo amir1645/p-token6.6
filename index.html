@@ -1,0 +1,121 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PToken DApp</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="style(3).css">
+  <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3.6.4/dist/index.js"></script>
+  <script src="app(2).js" defer></script>
+</head>
+<body>
+  <div class="language-select">
+    <select id="language" onchange="changeLanguage()">
+      <option value="fa">فارسی</option>
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <div class="header">
+    <h1 class="title">PToken DApp</h1>
+  </div>
+
+  <div class="section wallet-section" id="wallet-section">
+    <select id="wallet-provider" class="wallet-select" onchange="selectWalletProvider()">
+      <option value="metamask">MetaMask</option>
+      <option value="walletconnect">WalletConnect</option>
+      <option value="coinbase">Coinbase Wallet</option>
+    </select>
+    <button id="connect-btn" class="button" onclick="connectWallet()">اتصال به کیف پول</button>
+    <button id="disconnect-btn" class="button" onclick="disconnectWallet()" style="display: none;">قطع اتصال</button>
+    <div class="account" id="account"></div>
+  </div>
+
+  <div class="section" id="register-section" style="display: none;">
+    <h2 class="section-title" id="register-title">ثبت‌نام</h2>
+    <div class="input-group">
+      <input type="text" id="upline-address" class="input" placeholder="آدرس آپلاین">
+      <div class="radio-group">
+        <label><input type="radio" name="place" value="left" checked> <span id="left-label">سمت چپ</span></label>
+        <label><input type="radio" name="place" value="right"> <span id="right-label">سمت راست</span></label>
+      </div>
+      <button class="button" onclick="register()">ثبت‌نام</button>
+    </div>
+  </div>
+
+  <div class="section" id="user-info" style="display: none;">
+    <h2 class="section-title" id="user-info-title">اطلاعات کاربر</h2>
+    <div class="info-grid">
+      <div>شناسه: <span id="user-id"></span></div>
+      <div>آپلاین: <span id="user-upline"></span></div>
+      <div>تعداد سمت چپ: <span id="left-count"></span></div>
+      <div>تعداد سمت راست: <span id="right-count"></span></div>
+      <div>دست سنگین: <span id="heavy-hand"></span></div>
+      <div>تعادل خورده از ابتدا: <span id="balance-count"></span></div>
+      <div>تعادل خورده در دوره: <span id="cycle-balance-count"></span></div>
+      <div>مدت زمان دوره: <span id="cycle-duration"></span> ثانیه</div>
+      <div>تعادل سیو شده: <span id="saved-balance-count"></span></div>
+    </div>
+  </div>
+
+  <div class="section" id="tree-section" style="display: none;">
+    <h2 class="section-title" id="tree-title">ساختار درختی</h2>
+    <div class="binary-tree" id="tree"></div>
+  </div>
+
+  <div class="section" id="ad-section" style="display: none;">
+    <h2 class="section-title" id="ad-title">تبلیغات</h2>
+    <div class="input-group">
+      <input type="text" id="ad-link" class="input" placeholder="لینک تبلیغ">
+      <input type="text" id="ad-description" class="input" placeholder="توضیحات تبلیغ">
+      <button id="save-ad-btn" class="button" onclick="saveAd()">ذخیره تبلیغ</button>
+    </div>
+    <div id="ad-display"></div>
+  </div>
+
+  <div class="message" id="message"></div>
+</body>
+</html>
