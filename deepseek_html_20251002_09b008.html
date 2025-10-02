@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PToken DApp</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="https://unpkg.com/@coinbase/wallet-sdk@3.6.6/dist/index.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-coins logo-icon"></i>
+        <h1 class="title">PToken DApp</h1>
+      </div>
+      <div class="language-select">
+        <select id="language" onchange="changeLanguage()">
+          <option value="fa">فارسی</option>
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('wallet')">کیف پول</div>
+      <div class="tab" onclick="switchTab('user')">اطلاعات کاربر</div>
+      <div class="tab" onclick="switchTab('tree')">ساختار درختی</div>
+      <div class="tab" onclick="switchTab('miner')">ماینر</div>
+      <div class="tab" onclick="switchTab('withdraw')">برداشت</div>
+      <div class="tab" onclick="switchTab('ads')">تبلیغات</div>
+    </div>
+
+    <!-- تب کیف پول -->
+    <div id="wallet-tab" class="tab-content active">
+      <div class="section wallet-section">
+        <h2 class="section-title"><i class="fas fa-wallet"></i> اتصال کیف پول</h2>
+        <select id="wallet-provider" class="wallet-select">
+          <option value="metamask">MetaMask</option>
+          <option value="walletconnect">WalletConnect</option>
+          <option value="coinbase">Coinbase Wallet</option>
+        </select>
+        <button id="connect-btn" onclick="connectWallet()" class="button pulse">
+          <i class="fas fa-plug"></i> اتصال به کیف پول
+        </button>
+        <button id="disconnect-btn" onclick="disconnectWallet()" class="button button-secondary" style="display: none;">
+          <i class="fas fa-power-off"></i> قطع اتصال
+        </button>
+        <p id="account" class="account"></p>
+      </div>
+    </div>
+
+    <!-- تب اطلاعات کاربر -->
+    <div id="user-tab" class="tab-content">
+      <div class="section">
+        <h2 class="section-title"><i class="fas fa-user"></i> ثبت‌نام</h2>
+        <div class="input-group">
+          <input id="upline-address" type="text" placeholder="آدرس آپلاین" class="input">
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="place" value="left" checked> <span id="left-label">سمت چپ</span>
+            </label>
+            <label>
+              <input type="radio" name="place" value="right"> <span id="right-label">سمت راست</span>
+            </label>
+          </div>
+          <button onclick="register()" class="button button-success">
+            <i class="fas fa-user-plus"></i> ثبت‌نام
+          </button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title"><i class="fas fa-info-circle"></i> اطلاعات کاربر</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="label">شناسه کاربر</div>
+            <div class="value" id="user-id">-</div>
+          </div>
+          <div class="info-card">
+            <div class="label">آپلاین</div>
+            <div class="value" id="user-upline">-</div>
+          </div>
+          <div class="info-card">
+            <div class="label">تعداد سمت چپ</div>
+            <div class="value" id="left-count">0</div>
+          </div>
+          <div class="info-card">
+            <div class="label">تعداد سمت راست</div>
+            <div class="value" id="right-count">0</div>
+          </div>
+          <div class="info-card">
+            <div class="label">تعادل خورده</div>
+            <div class="value" id="balance-count">0</div>
+          </div>
+          <div class="info-card">
+            <div class="label">تعادل سیو شده</div>
+            <div class="value" id="saved-balance-count">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- تب ساختار درختی -->
+    <div id="tree-tab" class="tab-content">
+      <div class="section">
+        <h2 class="section-title"><i class="fas fa-sitemap"></i> ساختار درختی</h2>
+        <div class="tree-container">
+          <div id="tree" class="binary-tree"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- تب ماینر -->
+    <div id="miner-tab" class="tab-content">
+      <div class="section miner-section">
+        <h2 class="section-title"><i class="fas fa-hard-hat"></i> وضعیت ماینر</h2>
+        
+        <div class="miner-status">
+          <div>
+            <div class="label">وضعیت</div>
+            <div class="value" id="miner-status">غیرفعال</div>
+          </div>
+          
+          <div class="miner-progress">
+            <div class="label">پیشرفت پرداخت</div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="miner-progress" style="width: 0%"></div>
+            </div>
+            <div class="value" id="miner-percentage">0%</div>
+          </div>
+          
+          <button onclick="contributeToMiner()" class="button">
+            <i class="fas fa-donate"></i> مشارکت در ماینر
+          </button>
+        </div>
+        
+        <div class="miner-stats">
+          <div class="stat-card">
+            <div class="stat-label">تعداد کاربران واجد شرایط</div>
+            <div class="stat-value" id="eligible-users">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">تعداد ماینرها</div>
+            <div class="stat-value" id="miner-count">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">پاداش کل ماینر</div>
+            <div class="stat-value" id="total-miner-rewards">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">موجودی استخر ماینر</div>
+            <div class="stat-value" id="miner-pool-balance">0</div>
+          </div>
+        </div>
+        
+        <div class="input-group" style="margin-top: 20px;">
+          <button onclick="buyMinerTokens()" class="button">
+            <i class="fas fa-shopping-cart"></i> خرید توکن ماینر
+          </button>
+          <button onclick="distributeMinerTokens()" class="button button-secondary">
+            <i class="fas fa-share-alt"></i> توزیع توکن ماینر
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- تب برداشت -->
+    <div id="withdraw-tab" class="tab-content">
+      <div class="section">
+        <h2 class="section-title"><i class="fas fa-money-bill-wave"></i> برداشت وجوه</h2>
+        
+        <div class="withdraw-section">
+          <div class="withdraw-card">
+            <div class="label">موجودی قابل برداشت از استخر</div>
+            <div class="amount" id="pool-balance">0 MATIC</div>
+            <button onclick="withdrawPool()" class="button">
+              <i class="fas fa-wallet"></i> برداشت از استخر
+            </button>
+          </div>
+          
+          <div class="withdraw-card">
+            <div class="label">موجودی ویژه قابل برداشت</div>
+            <div class="amount" id="special-balance">0 MATIC</div>
+            <button onclick="withdrawSpecials()" class="button">
+              <i class="fas fa-gem"></i> برداشت ویژه
+            </button>
+          </div>
+          
+          <div class="withdraw-card">
+            <div class="label">برداشت دستی</div>
+            <div class="input-group">
+              <input type="text" id="manual-withdraw-amount" placeholder="مقدار (MATIC)" class="input">
+              <select id="manual-withdraw-type" class="input">
+                <option value="pool">از استخر</option>
+                <option value="special">ویژه</option>
+              </select>
+              <button onclick="manualWithdraw()" class="button button-secondary">
+                <i class="fas fa-hand-holding-usd"></i> برداشت دستی
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- تب تبلیغات -->
+    <div id="ads-tab" class="tab-content">
+      <div class="section">
+        <h2 class="section-title"><i class="fas fa-ad"></i> تبلیغات</h2>
+        <div class="input-group">
+          <input id="ad-link" type="text" placeholder="لینک تبلیغ" class="input">
+          <textarea id="ad-description" placeholder="توضیحات تبلیغ" class="input" rows="3"></textarea>
+          <button id="save-ad-btn" onclick="saveAd()" class="button" style="display: none;">
+            <i class="fas fa-save"></i> ذخیره تبلیغ
+          </button>
+        </div>
+        <div id="ad-display" class="ad-display"></div>
+      </div>
+    </div>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
